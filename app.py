@@ -42,19 +42,26 @@ with tab1:
 with tab2:
     with st.form("form_acquisto"):
         c1, c2, c3 = st.columns([3, 1, 1])
-        scelta = c1.selectbox("Moneta", df_monete['Descrizione'].tolist())
+        
+        opzioni_monete = df_monete.apply(lambda x: f"{x['Descrizione']} ({x['Anno']})", axis=1).tolist()
+        scelta_label = c1.selectbox("Moneta", opzioni_monete)
+        idx_moneta = opzioni_monete.index(scelta_label)
+        
         qta = c2.number_input("Quantità", min_value=1, value=1)
         prezzo_pagato = c3.number_input("Prezzo acquisto (€)", min_value=0.0, step=1.0)
         
         if st.form_submit_button("Aggiungi"):
-            m = df_monete[df_monete['Descrizione'] == scelta].iloc[0]
+            m = df_monete.iloc[idx_moneta]
             v_fus = ((m['Peso_g'] * (m['Titolo_Ag']/1000) * prezzo_ag_g) + (m['Peso_g'] * (m['Titolo_Au']/1000) * prezzo_au_g)) * qta
+            
+            spread_perc = ((prezzo_pagato - v_fus) / v_fus * 100) if v_fus > 0 else 0
+            
             st.session_state.sessione_acquisto.append({
-                'Moneta': scelta,
+                'Moneta': scelta_label,
                 'Quantità': qta,
                 'Valore fusione (€)': round(v_fus, 2),
                 'Prezzo acquisto (€)': round(prezzo_pagato, 2),
-                'Spread': round(prezzo_pagato - v_fus, 2)
+                'Spread (%)': f"{spread_perc:.2f}%"
             })
             st.rerun()
 
@@ -64,14 +71,15 @@ with tab2:
         tot_q = df_a['Quantità'].sum()
         tot_f = df_a['Valore fusione (€)'].sum()
         tot_p = df_a['Prezzo acquisto (€)'].sum()
-        tot_s = round(tot_p - tot_f, 2)
+        
+        tot_spread_perc = ((tot_p - tot_f) / tot_f * 100) if tot_f > 0 else 0
         
         riga_totale = pd.DataFrame([{
             'Moneta': 'TOTALE',
             'Quantità': tot_q,
             'Valore fusione (€)': round(tot_f, 2),
             'Prezzo acquisto (€)': round(tot_p, 2),
-            'Spread': tot_s
+            'Spread (%)': f"{tot_spread_perc:.2f}%"
         }])
         
         df_finale = pd.concat([df_a, riga_totale], ignore_index=True)
