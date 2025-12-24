@@ -17,8 +17,8 @@ except:
     st.stop()
 
 st.sidebar.header("Prezzi Metalli")
-prezzo_ag_g = st.sidebar.number_input("Argento (€/g)", min_value=0.0, value=0.85, step=0.01, format="%.2f")
-prezzo_au_g = st.sidebar.number_input("Oro (€/g)", min_value=0.0, value=70.0, step=0.01, format="%.2f")
+prezzo_ag_g = st.sidebar.number_input("Argento (€/g)", min_value=0.0, value=1.96, step=0.01, format="%.2f")
+prezzo_au_g = st.sidebar.number_input("Oro (€/g)", min_value=0.0, value=122.15, step=0.01, format="%.2f")
 
 oz_troy = 31.1035
 st.sidebar.write(f"Ag: **{(prezzo_ag_g * oz_troy):.2f} €/oz**")
@@ -88,3 +88,4 @@ with tab2:
         if st.button("Resetta Tabella Acquisto"):
             st.session_state.sessione_acquisto = []
             st.rerun()
+
