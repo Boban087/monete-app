@@ -43,7 +43,7 @@ with tab2:
     with st.form("form_acquisto"):
         c1, c2, c3 = st.columns([3, 1, 1])
         
-        opzioni_monete = df_monete.apply(lambda x: f"{x['Descrizione']} ({x['Anno']})", axis=1).tolist()
+        opzioni_monete = df_monete.apply(lambda x: f"{x['Descrizione']} ({x['Anni']})", axis=1).tolist()
         scelta_label = c1.selectbox("Moneta", opzioni_monete)
         idx_moneta = opzioni_monete.index(scelta_label)
         
